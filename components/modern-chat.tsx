@@ -1,0 +1,504 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Send, Smile, Paperclip, MoreVertical, Phone, Video, Search } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { useUser } from "@/lib/auth"
+
+interface Message {
+  id: string
+  content: string
+  sender_id: string
+  sender_name: string
+  sender_avatar?: string
+  created_at: string
+  is_ai_generated?: boolean
+}
+
+interface ChatUser {
+  id: string
+  name: string
+  avatar_url?: string
+  is_online: boolean
+  last_seen?: string
+}
+
+// Mock data for when database is not available
+const mockMessages: Message[] = [
+  {
+    id: "1",
+    content: "Hi! I saw your profile and thought we might have some great synergies in the tech space.",
+    sender_id: "mock-user-1",
+    sender_name: "Sarah Chen",
+    sender_avatar: "/placeholder.svg?height=40&width=40",
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: "2",
+    content: "That sounds interesting! I'd love to learn more about your work in AI.",
+    sender_id: "550e8400-e29b-41d4-a716-446655440000",
+    sender_name: "Demo User",
+    sender_avatar: "/placeholder.svg?height=40&width=40",
+    created_at: new Date(Date.now() - 3000000).toISOString(),
+  },
+  {
+    id: "3",
+    content:
+      "I'm currently working on some exciting projects involving machine learning and natural language processing. Would you be interested in a quick call this week?",
+    sender_id: "mock-user-1",
+    sender_name: "Sarah Chen",
+    sender_avatar: "/placeholder.svg?height=40&width=40",
+    created_at: new Date(Date.now() - 1800000).toISOString(),
+  },
+]
+
+const mockChatUsers: ChatUser[] = [
+  {
+    id: "mock-user-1",
+    name: "Sarah Chen",
+    avatar_url: "/placeholder.svg?height=40&width=40",
+    is_online: true,
+  },
+  {
+    id: "mock-user-2",
+    name: "Michael Rodriguez",
+    avatar_url: "/placeholder.svg?height=40&width=40",
+    is_online: false,
+    last_seen: "2 hours ago",
+  },
+  {
+    id: "mock-user-3",
+    name: "Emily Johnson",
+    avatar_url: "/placeholder.svg?height=40&width=40",
+    is_online: true,
+  },
+]
+
+// Helper function to safely get initials from a name
+const getInitials = (name?: string): string => {
+  if (!name || typeof name !== "string") return "U"
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+// Helper function to safely get user ID
+const getUserId = (user: any): string => {
+  if (!user) return "550e8400-e29b-41d4-a716-446655440000" // Default demo user ID
+  return user.id || "550e8400-e29b-41d4-a716-446655440000"
+}
+
+// Helper function to safely get user name
+const getUserName = (user: any): string => {
+  if (!user) return "Demo User"
+  return user.user_metadata?.full_name || user.email?.split("@")[0] || "Demo User"
+}
+
+export function ModernChat() {
+  const { user, loading: authLoading } = useUser()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>([])
+  const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
+  const [newMessage, setNewMessage] = useState("")
+  const [loading, setLoading] = useState(true)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const currentUserId = getUserId(user)
+  const currentUserName = getUserName(user)
+
+  useEffect(() => {
+    if (!authLoading) {
+      loadInitialData()
+    }
+  }, [authLoading, user])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  const loadInitialData = async () => {
+    try {
+      if (isSupabaseConfigured && supabase && user) {
+        // Try to load real data from users table
+        const { data: users, error: usersError } = await supabase
+          .from("users")
+          .select("id, full_name, avatar_url, is_active")
+          .neq("id", currentUserId)
+          .limit(10)
+
+        if (!usersError && users && users.length > 0) {
+          const chatUsersData = users.map((u) => ({
+            id: u.id,
+            name: u.full_name || "Unknown User",
+            avatar_url: u.avatar_url,
+            is_online: u.is_active || Math.random() > 0.5, // Random online status for demo
+            last_seen: Math.random() > 0.5 ? undefined : "2 hours ago",
+          }))
+          setChatUsers(chatUsersData)
+          setSelectedUser(chatUsersData[0])
+
+          // Load messages for the first user
+          await loadMessages(chatUsersData[0].id)
+        } else {
+          // Fallback to mock data
+          setChatUsers(mockChatUsers)
+          setSelectedUser(mockChatUsers[0])
+          setMessages(mockMessages)
+        }
+      } else {
+        // Use mock data when Supabase is not configured or user is not authenticated
+        setChatUsers(mockChatUsers)
+        setSelectedUser(mockChatUsers[0])
+        setMessages(mockMessages)
+      }
+    } catch (error) {
+      console.warn("Failed to load chat data, using mock data:", error)
+      setChatUsers(mockChatUsers)
+      setSelectedUser(mockChatUsers[0])
+      setMessages(mockMessages)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadMessages = async (otherUserId: string) => {
+    try {
+      if (isSupabaseConfigured && supabase && user) {
+        // First, try to find existing conversation
+        const { data: conversations, error: convError } = await supabase
+          .from("conversations")
+          .select("id")
+          .or(`match_id.in.(${currentUserId},${otherUserId})`)
+          .limit(1)
+
+        if (!convError && conversations && conversations.length > 0) {
+          const conversationId = conversations[0].id
+
+          // Load messages for this conversation
+          const { data: messagesData, error: messagesError } = await supabase
+            .from("messages")
+            .select(`
+              id,
+              content,
+              sender_id,
+              sent_at,
+              message_type
+            `)
+            .eq("conversation_id", conversationId)
+            .order("sent_at", { ascending: true })
+
+          if (!messagesError && messagesData) {
+            // Get sender details for each message
+            const formattedMessages = await Promise.all(
+              messagesData.map(async (msg) => {
+                const { data: senderData } = await supabase
+                  .from("users")
+                  .select("full_name, avatar_url")
+                  .eq("id", msg.sender_id)
+                  .single()
+
+                return {
+                  id: msg.id,
+                  content: msg.content,
+                  sender_id: msg.sender_id,
+                  sender_name: senderData?.full_name || "Unknown User",
+                  sender_avatar: senderData?.avatar_url,
+                  created_at: msg.sent_at,
+                }
+              }),
+            )
+            setMessages(formattedMessages)
+          } else {
+            // Fallback to mock messages
+            setMessages(mockMessages)
+          }
+        } else {
+          // No conversation found, show empty or mock messages
+          setMessages(mockMessages)
+        }
+      } else {
+        setMessages(mockMessages)
+      }
+    } catch (error) {
+      console.warn("Failed to load messages:", error)
+      setMessages(mockMessages)
+    }
+  }
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !selectedUser) return
+
+    const tempMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: newMessage.trim(),
+      sender_id: currentUserId,
+      sender_name: currentUserName,
+      sender_avatar: user?.user_metadata?.avatar_url,
+      created_at: new Date().toISOString(),
+    }
+
+    // Optimistically add message to UI
+    setMessages((prev) => [...prev, tempMessage])
+    const messageContent = newMessage.trim()
+    setNewMessage("")
+
+    try {
+      if (isSupabaseConfigured && supabase && user) {
+        // First, ensure conversation exists
+        let conversationId = null
+
+        const { data: existingConv } = await supabase
+          .from("conversations")
+          .select("id")
+          .or(`match_id.in.(${currentUserId},${selectedUser.id})`)
+          .single()
+
+        if (existingConv) {
+          conversationId = existingConv.id
+        } else {
+          // Create new conversation
+          const { data: newConv, error: convError } = await supabase
+            .from("conversations")
+            .insert({
+              title: `Chat with ${selectedUser.name}`,
+              type: "direct",
+              is_active: true,
+              last_message_at: new Date().toISOString(),
+            })
+            .select()
+            .single()
+
+          if (!convError && newConv) {
+            conversationId = newConv.id
+          }
+        }
+
+        if (conversationId) {
+          const { data, error } = await supabase
+            .from("messages")
+            .insert([
+              {
+                conversation_id: conversationId,
+                sender_id: currentUserId,
+                content: messageContent,
+                message_type: "text",
+                sent_at: new Date().toISOString(),
+              },
+            ])
+            .select()
+            .single()
+
+          if (!error && data) {
+            // Replace temp message with real message
+            setMessages((prev) =>
+              prev.map((msg) => (msg.id === tempMessage.id ? { ...tempMessage, id: data.id } : msg)),
+            )
+
+            // Update conversation last message time
+            await supabase
+              .from("conversations")
+              .update({ last_message_at: new Date().toISOString() })
+              .eq("id", conversationId)
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to send message to database:", error)
+      // Message already added optimistically, so it will still appear
+    }
+  }
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const handleUserSelect = async (chatUser: ChatUser) => {
+    setSelectedUser(chatUser)
+    await loadMessages(chatUser.id)
+  }
+
+  if (authLoading || loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+          className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="h-[600px] flex bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* Chat Users Sidebar */}
+      <div className="w-80 border-r border-gray-200 flex flex-col">
+        <div className="p-4 border-b border-gray-200">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input placeholder="Search conversations..." className="pl-10 bg-gray-50 border-0" />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {chatUsers.map((chatUser) => (
+            <motion.div
+              key={chatUser.id}
+              whileHover={{ backgroundColor: "#f8fafc" }}
+              onClick={() => handleUserSelect(chatUser)}
+              className={`p-4 cursor-pointer border-b border-gray-100 ${
+                selectedUser?.id === chatUser.id ? "bg-purple-50 border-purple-200" : ""
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={chatUser.avatar_url || "/placeholder.svg"} />
+                    <AvatarFallback>{getInitials(chatUser.name)}</AvatarFallback>
+                  </Avatar>
+                  {chatUser.is_online && (
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 truncate">{chatUser.name || "Unknown User"}</p>
+                  <p className="text-sm text-gray-500">
+                    {chatUser.is_online ? "Online" : chatUser.last_seen || "Offline"}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {selectedUser ? (
+          <>
+            {/* Chat Header */}
+            <div className="p-4 border-b border-gray-200 bg-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={selectedUser.avatar_url || "/placeholder.svg"} />
+                      <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>
+                    </Avatar>
+                    {selectedUser.is_online && (
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{selectedUser.name || "Unknown User"}</h3>
+                    <p className="text-sm text-gray-500">
+                      {selectedUser.is_online ? "Online" : selectedUser.last_seen || "Offline"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              <AnimatePresence>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`flex ${message.sender_id === currentUserId ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`flex items-end space-x-2 max-w-xs lg:max-w-md ${
+                        message.sender_id === currentUserId ? "flex-row-reverse space-x-reverse" : ""
+                      }`}
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={message.sender_avatar || "/placeholder.svg"} />
+                        <AvatarFallback>{getInitials(message.sender_name)}</AvatarFallback>
+                      </Avatar>
+                      <div
+                        className={`px-4 py-2 rounded-2xl ${
+                          message.sender_id === currentUserId
+                            ? "bg-purple-600 text-white"
+                            : "bg-white text-gray-900 border border-gray-200"
+                        }`}
+                      >
+                        <p className="text-sm">{message.content}</p>
+                        {message.is_ai_generated && (
+                          <Badge variant="secondary" className="mt-1 text-xs">
+                            AI Suggested
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Message Input */}
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <div className="flex-1 relative">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type a message..."
+                    className="pr-12"
+                    onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                  />
+                  <Button variant="ghost" size="sm" className="absolute right-1 top-1/2 transform -translate-y-1/2">
+                    <Smile className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button
+                  onClick={sendMessage}
+                  className="bg-purple-600 hover:bg-purple-700"
+                  disabled={!newMessage.trim()}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-gray-50">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Send className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Start a conversation</h3>
+              <p className="text-gray-500">Select a contact to begin messaging</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
