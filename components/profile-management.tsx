@@ -300,573 +300,559 @@ export function ProfileManagement() {
     <div className="container mx-auto p-6 max-w-6xl">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Settings & Profile
-            </h1>
-            <p className="text-gray-600 mt-2">Manage your account settings and professional profile</p>
-          </div>
-          <Button onClick={saveProfile} disabled={saving} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
+        <div className="flex flex-col items-center justify-center text-center mb-4">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Settings & Profile
+          </h1>
+          <p className="text-gray-600 mt-2">Manage your account settings and professional profile</p>
         </div>
+        <div className="flex justify-center">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full max-w-4xl">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </TabsTrigger>
+              <TabsTrigger value="professional" className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Professional
+              </TabsTrigger>
+              <TabsTrigger value="preferences" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Preferences
+              </TabsTrigger>
+              <TabsTrigger value="security" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Security
+              </TabsTrigger>
+            </TabsList>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="professional" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Professional
-            </TabsTrigger>
-            <TabsTrigger value="preferences" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Preferences
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Security
-            </TabsTrigger>
-          </TabsList>
+            {/* Profile Tab */}
+            <TabsContent value="profile" className="space-y-6">
+              {/* Basic Information */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <User className="h-5 w-5 text-purple-600" />
+                    Basic Information
+                  </CardTitle>
+                  <CardDescription>Your personal profile information</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center space-x-6">
+                    <div className="relative">
+                      <Avatar className="h-24 w-24 ring-4 ring-purple-100">
+                        <AvatarImage src={profile.avatar_url || "/placeholder.svg"} />
+                        <AvatarFallback className="text-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                          {getInitials(profile.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Button size="sm" variant="outline" className="absolute -bottom-2 -right-2 h-8 w-8 p-0 rounded-full">
+                        <User className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex-1">
+                      <Label htmlFor="avatar_url" className="text-sm font-medium">Avatar URL</Label>
+                      <Input
+                        id="avatar_url"
+                        value={profile.avatar_url || ""}
+                        onChange={(e) => updateProfile("avatar_url", e.target.value)}
+                        placeholder="https://example.com/avatar.jpg"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            {/* Basic Information */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <User className="h-5 w-5 text-purple-600" />
-                  Basic Information
-                </CardTitle>
-                <CardDescription>Your personal profile information</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
-                    <Avatar className="h-24 w-24 ring-4 ring-purple-100">
-                      <AvatarImage src={profile.avatar_url || "/placeholder.svg"} />
-                      <AvatarFallback className="text-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                        {getInitials(profile.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button size="sm" variant="outline" className="absolute -bottom-2 -right-2 h-8 w-8 p-0 rounded-full">
-                      <User className="h-4 w-4" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="full_name" className="text-sm font-medium">Full Name *</Label>
+                      <Input
+                        id="full_name"
+                        value={profile.full_name || ""}
+                        onChange={(e) => updateProfile("full_name", e.target.value)}
+                        placeholder="John Doe"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={profile.email || ""}
+                        onChange={(e) => updateProfile("email", e.target.value)}
+                        placeholder="john@example.com"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="bio" className="text-sm font-medium">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      value={profile.bio || ""}
+                      onChange={(e) => updateProfile("bio", e.target.value)}
+                      placeholder="Tell us about yourself..."
+                      rows={3}
+                      className="mt-1"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Contact Information */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Globe className="h-5 w-5 text-blue-600" />
+                    Contact & Social
+                  </CardTitle>
+                  <CardDescription>Your contact information and social media links</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="website_url" className="text-sm font-medium">Website</Label>
+                    <Input
+                      id="website_url"
+                      value={profile.website_url || ""}
+                      onChange={(e) => updateProfile("website_url", e.target.value)}
+                      placeholder="https://yourwebsite.com"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="linkedin_url" className="text-sm font-medium">LinkedIn</Label>
+                      <Input
+                        id="linkedin_url"
+                        value={profile.linkedin_url || ""}
+                        onChange={(e) => updateProfile("linkedin_url", e.target.value)}
+                        placeholder="https://linkedin.com/in/yourprofile"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="twitter_url" className="text-sm font-medium">Twitter</Label>
+                      <Input
+                        id="twitter_url"
+                        value={profile.twitter_url || ""}
+                        onChange={(e) => updateProfile("twitter_url", e.target.value)}
+                        placeholder="https://twitter.com/yourhandle"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Professional Tab */}
+            <TabsContent value="professional" className="space-y-6">
+              {/* Professional Information */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Briefcase className="h-5 w-5 text-green-600" />
+                    Professional Information
+                  </CardTitle>
+                  <CardDescription>Your work and professional details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="company" className="text-sm font-medium">Company</Label>
+                      <Input
+                        id="company"
+                        value={profile.company || ""}
+                        onChange={(e) => updateProfile("company", e.target.value)}
+                        placeholder="Acme Corp"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="position" className="text-sm font-medium">Position</Label>
+                      <Input
+                        id="position"
+                        value={profile.position || ""}
+                        onChange={(e) => updateProfile("position", e.target.value)}
+                        placeholder="Software Engineer"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="industry" className="text-sm font-medium">Industry</Label>
+                      <Select value={profile.industry || ""} onValueChange={(value) => updateProfile("industry", value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Technology">Technology</SelectItem>
+                          <SelectItem value="Finance">Finance</SelectItem>
+                          <SelectItem value="Healthcare">Healthcare</SelectItem>
+                          <SelectItem value="Education">Education</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Consulting">Consulting</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="experience_level" className="text-sm font-medium">Experience Level</Label>
+                      <Select
+                        value={profile.experience_level || ""}
+                        onValueChange={(value) => updateProfile("experience_level", value)}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select experience level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Entry">Entry Level</SelectItem>
+                          <SelectItem value="Mid">Mid Level</SelectItem>
+                          <SelectItem value="Senior">Senior Level</SelectItem>
+                          <SelectItem value="Executive">Executive</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="location" className="text-sm font-medium">Location</Label>
+                    <Input
+                      id="location"
+                      value={profile.location || ""}
+                      onChange={(e) => updateProfile("location", e.target.value)}
+                      placeholder="San Francisco, CA"
+                      className="mt-1"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Skills and Interests */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-orange-50/30">
+                <CardHeader>
+                  <CardTitle className="text-xl">Skills & Interests</CardTitle>
+                  <CardDescription>Add your skills, interests, and professional goals</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Skills */}
+                  <div>
+                    <Label className="text-sm font-medium">Skills</Label>
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                      {profile.skills?.map((skill, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-red-100 transition-colors"
+                          onClick={() => removeArrayItem("skills", index)}
+                        >
+                          {skill} ×
+                        </Badge>
+                      ))}
+                    </div>
+                    <Input
+                      placeholder="Add a skill and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          addArrayItem("skills", e.currentTarget.value)
+                          e.currentTarget.value = ""
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* Interests */}
+                  <div>
+                    <Label className="text-sm font-medium">Interests</Label>
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                      {profile.interests?.map((interest, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="cursor-pointer hover:bg-red-100 transition-colors"
+                          onClick={() => removeArrayItem("interests", index)}
+                        >
+                          {interest} ×
+                        </Badge>
+                      ))}
+                    </div>
+                    <Input
+                      placeholder="Add an interest and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          addArrayItem("interests", e.currentTarget.value)
+                          e.currentTarget.value = ""
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* Goals */}
+                  <div>
+                    <Label className="text-sm font-medium">Professional Goals</Label>
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                      {profile.goals?.map((goal, index) => (
+                        <Badge
+                          key={index}
+                          variant="default"
+                          className="cursor-pointer hover:bg-red-100 transition-colors"
+                          onClick={() => removeArrayItem("goals", index)}
+                        >
+                          {goal} ×
+                        </Badge>
+                      ))}
+                    </div>
+                    <Input
+                      placeholder="Add a goal and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          addArrayItem("goals", e.currentTarget.value)
+                          e.currentTarget.value = ""
+                        }
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI Profile Summary */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
+                    AI Profile Summary
+                  </CardTitle>
+                  <CardDescription>Let AI generate a professional summary based on your profile</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={generateAISummary}
+                      disabled={generatingAI}
+                      variant="outline"
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:from-purple-100 hover:to-pink-100"
+                    >
+                      {generatingAI ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4" />
+                          Generate AI Summary
+                        </>
+                      )}
                     </Button>
                   </div>
-                  <div className="flex-1">
-                    <Label htmlFor="avatar_url" className="text-sm font-medium">Avatar URL</Label>
-                    <Input
-                      id="avatar_url"
-                      value={profile.avatar_url || ""}
-                      onChange={(e) => updateProfile("avatar_url", e.target.value)}
-                      placeholder="https://example.com/avatar.jpg"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="full_name" className="text-sm font-medium">Full Name *</Label>
-                    <Input
-                      id="full_name"
-                      value={profile.full_name || ""}
-                      onChange={(e) => updateProfile("full_name", e.target.value)}
-                      placeholder="John Doe"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={profile.email || ""}
-                      onChange={(e) => updateProfile("email", e.target.value)}
-                      placeholder="john@example.com"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="bio" className="text-sm font-medium">Bio</Label>
                   <Textarea
-                    id="bio"
-                    value={profile.bio || ""}
-                    onChange={(e) => updateProfile("bio", e.target.value)}
-                    placeholder="Tell us about yourself..."
-                    rows={3}
-                    className="mt-1"
+                    value={profile.ai_profile_summary || ""}
+                    onChange={(e) => updateProfile("ai_profile_summary", e.target.value)}
+                    placeholder="Your AI-generated profile summary will appear here..."
+                    rows={4}
+                    className="resize-none"
                   />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-            {/* Contact Information */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Globe className="h-5 w-5 text-blue-600" />
-                  Contact & Social
-                </CardTitle>
-                <CardDescription>Your contact information and social media links</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="website_url" className="text-sm font-medium">Website</Label>
-                  <Input
-                    id="website_url"
-                    value={profile.website_url || ""}
-                    onChange={(e) => updateProfile("website_url", e.target.value)}
-                    placeholder="https://yourwebsite.com"
-                    className="mt-1"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="linkedin_url" className="text-sm font-medium">LinkedIn</Label>
-                    <Input
-                      id="linkedin_url"
-                      value={profile.linkedin_url || ""}
-                      onChange={(e) => updateProfile("linkedin_url", e.target.value)}
-                      placeholder="https://linkedin.com/in/yourprofile"
-                      className="mt-1"
-                    />
+            {/* Preferences Tab */}
+            <TabsContent value="preferences" className="space-y-6">
+              {/* Meeting Preferences */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Settings className="h-5 w-5 text-blue-600" />
+                    Meeting Preferences
+                  </CardTitle>
+                  <CardDescription>Set your availability and meeting preferences</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="availability_status" className="text-sm font-medium">Availability Status</Label>
+                      <Select
+                        value={profile.availability_status || ""}
+                        onValueChange={(value) => updateProfile("availability_status", value)}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select availability" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Available">Available</SelectItem>
+                          <SelectItem value="Busy">Busy</SelectItem>
+                          <SelectItem value="Away">Away</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="timezone" className="text-sm font-medium">Timezone</Label>
+                      <Input
+                        id="timezone"
+                        value={profile.timezone || ""}
+                        onChange={(e) => updateProfile("timezone", e.target.value)}
+                        placeholder="America/Los_Angeles"
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="twitter_url" className="text-sm font-medium">Twitter</Label>
-                    <Input
-                      id="twitter_url"
-                      value={profile.twitter_url || ""}
-                      onChange={(e) => updateProfile("twitter_url", e.target.value)}
-                      placeholder="https://twitter.com/yourhandle"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          {/* Professional Tab */}
-          <TabsContent value="professional" className="space-y-6">
-            {/* Professional Information */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Briefcase className="h-5 w-5 text-green-600" />
-                  Professional Information
-                </CardTitle>
-                <CardDescription>Your work and professional details</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="company" className="text-sm font-medium">Company</Label>
+                    <Label className="text-sm font-medium">Preferred Meeting Types</Label>
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                      {profile.preferred_meeting_types?.map((type, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-red-100 transition-colors"
+                          onClick={() => removeArrayItem("preferred_meeting_types", index)}
+                        >
+                          {type} ×
+                        </Badge>
+                      ))}
+                    </div>
                     <Input
-                      id="company"
-                      value={profile.company || ""}
-                      onChange={(e) => updateProfile("company", e.target.value)}
-                      placeholder="Acme Corp"
-                      className="mt-1"
+                      placeholder="Add a meeting type and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          addArrayItem("preferred_meeting_types", e.currentTarget.value)
+                          e.currentTarget.value = ""
+                        }
+                      }}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="position" className="text-sm font-medium">Position</Label>
-                    <Input
-                      id="position"
-                      value={profile.position || ""}
-                      onChange={(e) => updateProfile("position", e.target.value)}
-                      placeholder="Software Engineer"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
+                </CardContent>
+              </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="industry" className="text-sm font-medium">Industry</Label>
-                    <Select value={profile.industry || ""} onValueChange={(value) => updateProfile("industry", value)}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select industry" />
+              {/* Notification Settings */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Bell className="h-5 w-5 text-green-600" />
+                    Notification Settings
+                  </CardTitle>
+                  <CardDescription>Manage your notification preferences</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Email Notifications</Label>
+                      <p className="text-xs text-gray-500">Receive notifications via email</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Push Notifications</Label>
+                      <p className="text-xs text-gray-500">Receive push notifications</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Meeting Reminders</Label>
+                      <p className="text-xs text-gray-500">Get reminded about upcoming meetings</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Match Suggestions</Label>
+                      <p className="text-xs text-gray-500">Receive new match suggestions</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Security Tab */}
+            <TabsContent value="security" className="space-y-6">
+              {/* Account Security */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-red-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Shield className="h-5 w-5 text-red-600" />
+                    Account Security
+                  </CardTitle>
+                  <CardDescription>Manage your account security settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Two-Factor Authentication</Label>
+                      <p className="text-xs text-gray-500">Add an extra layer of security</p>
+                    </div>
+                    <Switch />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Login Notifications</Label>
+                      <p className="text-xs text-gray-500">Get notified of new login attempts</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Session Management</Label>
+                      <p className="text-xs text-gray-500">Manage active sessions</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Manage Sessions
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Privacy Settings */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Key className="h-5 w-5 text-purple-600" />
+                    Privacy Settings
+                  </CardTitle>
+                  <CardDescription>Control your privacy and data settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Profile Visibility</Label>
+                      <p className="text-xs text-gray-500">Control who can see your profile</p>
+                    </div>
+                    <Select defaultValue="public">
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Technology">Technology</SelectItem>
-                        <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Education">Education</SelectItem>
-                        <SelectItem value="Marketing">Marketing</SelectItem>
-                        <SelectItem value="Consulting">Consulting</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="public">Public</SelectItem>
+                        <SelectItem value="private">Private</SelectItem>
+                        <SelectItem value="connections">Connections Only</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label htmlFor="experience_level" className="text-sm font-medium">Experience Level</Label>
-                    <Select
-                      value={profile.experience_level || ""}
-                      onValueChange={(value) => updateProfile("experience_level", value)}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select experience level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Entry">Entry Level</SelectItem>
-                        <SelectItem value="Mid">Mid Level</SelectItem>
-                        <SelectItem value="Senior">Senior Level</SelectItem>
-                        <SelectItem value="Executive">Executive</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Data Sharing</Label>
+                      <p className="text-xs text-gray-500">Allow data to improve matching</p>
+                    </div>
+                    <Switch defaultChecked />
                   </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="location" className="text-sm font-medium">Location</Label>
-                  <Input
-                    id="location"
-                    value={profile.location || ""}
-                    onChange={(e) => updateProfile("location", e.target.value)}
-                    placeholder="San Francisco, CA"
-                    className="mt-1"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Skills and Interests */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-orange-50/30">
-              <CardHeader>
-                <CardTitle className="text-xl">Skills & Interests</CardTitle>
-                <CardDescription>Add your skills, interests, and professional goals</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Skills */}
-                <div>
-                  <Label className="text-sm font-medium">Skills</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {profile.skills?.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-red-100 transition-colors"
-                        onClick={() => removeArrayItem("skills", index)}
-                      >
-                        {skill} ×
-                      </Badge>
-                    ))}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Analytics</Label>
+                      <p className="text-xs text-gray-500">Help improve our services</p>
+                    </div>
+                    <Switch defaultChecked />
                   </div>
-                  <Input
-                    placeholder="Add a skill and press Enter"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        addArrayItem("skills", e.currentTarget.value)
-                        e.currentTarget.value = ""
-                      }
-                    }}
-                  />
-                </div>
-
-                {/* Interests */}
-                <div>
-                  <Label className="text-sm font-medium">Interests</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {profile.interests?.map((interest, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="cursor-pointer hover:bg-red-100 transition-colors"
-                        onClick={() => removeArrayItem("interests", index)}
-                      >
-                        {interest} ×
-                      </Badge>
-                    ))}
-                  </div>
-                  <Input
-                    placeholder="Add an interest and press Enter"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        addArrayItem("interests", e.currentTarget.value)
-                        e.currentTarget.value = ""
-                      }
-                    }}
-                  />
-                </div>
-
-                {/* Goals */}
-                <div>
-                  <Label className="text-sm font-medium">Professional Goals</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {profile.goals?.map((goal, index) => (
-                      <Badge
-                        key={index}
-                        variant="default"
-                        className="cursor-pointer hover:bg-red-100 transition-colors"
-                        onClick={() => removeArrayItem("goals", index)}
-                      >
-                        {goal} ×
-                      </Badge>
-                    ))}
-                  </div>
-                  <Input
-                    placeholder="Add a goal and press Enter"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        addArrayItem("goals", e.currentTarget.value)
-                        e.currentTarget.value = ""
-                      }
-                    }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* AI Profile Summary */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
-                  AI Profile Summary
-                </CardTitle>
-                <CardDescription>Let AI generate a professional summary based on your profile</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={generateAISummary}
-                    disabled={generatingAI}
-                    variant="outline"
-                    className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:from-purple-100 hover:to-pink-100"
-                  >
-                    {generatingAI ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4" />
-                        Generate AI Summary
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <Textarea
-                  value={profile.ai_profile_summary || ""}
-                  onChange={(e) => updateProfile("ai_profile_summary", e.target.value)}
-                  placeholder="Your AI-generated profile summary will appear here..."
-                  rows={4}
-                  className="resize-none"
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Preferences Tab */}
-          <TabsContent value="preferences" className="space-y-6">
-            {/* Meeting Preferences */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Settings className="h-5 w-5 text-blue-600" />
-                  Meeting Preferences
-                </CardTitle>
-                <CardDescription>Set your availability and meeting preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="availability_status" className="text-sm font-medium">Availability Status</Label>
-                    <Select
-                      value={profile.availability_status || ""}
-                      onValueChange={(value) => updateProfile("availability_status", value)}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select availability" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Available">Available</SelectItem>
-                        <SelectItem value="Busy">Busy</SelectItem>
-                        <SelectItem value="Away">Away</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="timezone" className="text-sm font-medium">Timezone</Label>
-                    <Input
-                      id="timezone"
-                      value={profile.timezone || ""}
-                      onChange={(e) => updateProfile("timezone", e.target.value)}
-                      placeholder="America/Los_Angeles"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium">Preferred Meeting Types</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {profile.preferred_meeting_types?.map((type, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-red-100 transition-colors"
-                        onClick={() => removeArrayItem("preferred_meeting_types", index)}
-                      >
-                        {type} ×
-                      </Badge>
-                    ))}
-                  </div>
-                  <Input
-                    placeholder="Add a meeting type and press Enter"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        addArrayItem("preferred_meeting_types", e.currentTarget.value)
-                        e.currentTarget.value = ""
-                      }
-                    }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Notification Settings */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Bell className="h-5 w-5 text-green-600" />
-                  Notification Settings
-                </CardTitle>
-                <CardDescription>Manage your notification preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Email Notifications</Label>
-                    <p className="text-xs text-gray-500">Receive notifications via email</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Push Notifications</Label>
-                    <p className="text-xs text-gray-500">Receive push notifications</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Meeting Reminders</Label>
-                    <p className="text-xs text-gray-500">Get reminded about upcoming meetings</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Match Suggestions</Label>
-                    <p className="text-xs text-gray-500">Receive new match suggestions</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Security Tab */}
-          <TabsContent value="security" className="space-y-6">
-            {/* Account Security */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-red-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Shield className="h-5 w-5 text-red-600" />
-                  Account Security
-                </CardTitle>
-                <CardDescription>Manage your account security settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Two-Factor Authentication</Label>
-                    <p className="text-xs text-gray-500">Add an extra layer of security</p>
-                  </div>
-                  <Switch />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Login Notifications</Label>
-                    <p className="text-xs text-gray-500">Get notified of new login attempts</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Session Management</Label>
-                    <p className="text-xs text-gray-500">Manage active sessions</p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Manage Sessions
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Privacy Settings */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Key className="h-5 w-5 text-purple-600" />
-                  Privacy Settings
-                </CardTitle>
-                <CardDescription>Control your privacy and data settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Profile Visibility</Label>
-                    <p className="text-xs text-gray-500">Control who can see your profile</p>
-                  </div>
-                  <Select defaultValue="public">
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                      <SelectItem value="connections">Connections Only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Data Sharing</Label>
-                    <p className="text-xs text-gray-500">Allow data to improve matching</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Analytics</Label>
-                    <p className="text-xs text-gray-500">Help improve our services</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </motion.div>
     </div>
   )

@@ -347,7 +347,20 @@ export function ModernChat() {
             <Input placeholder="Search conversations..." className="pl-10 bg-gray-50 border-0" />
           </div>
         </div>
-
+        {/* Current User at the top */}
+        <div className="flex items-center space-x-3 p-4 bg-purple-50 border-b border-purple-200">
+          <div className="relative">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={user?.user_metadata?.avatar_url || "/placeholder.svg"} />
+              <AvatarFallback>{getInitials(getUserName(user))}</AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-gray-900 truncate">{getUserName(user) || "You"}</p>
+            <p className="text-xs text-purple-600 font-semibold">You</p>
+          </div>
+        </div>
         <div className="flex-1 overflow-y-auto">
           {chatUsers.map((chatUser) => (
             <motion.div
@@ -398,7 +411,12 @@ export function ModernChat() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{selectedUser.name || "Unknown User"}</h3>
+                    <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                      {selectedUser.name || "Unknown User"}
+                      {selectedUser.id === currentUserId && (
+                        <span className="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-700 font-semibold">You</span>
+                      )}
+                    </h3>
                     <p className="text-sm text-gray-500">
                       {selectedUser.is_online ? "Online" : selectedUser.last_seen || "Offline"}
                     </p>
