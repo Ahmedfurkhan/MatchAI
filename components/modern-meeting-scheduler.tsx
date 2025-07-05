@@ -227,7 +227,7 @@ export function ModernMeetingScheduler() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 pb-20 md:pb-8 md:ml-64">
+    <div className="w-full max-w-2xl md:max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6">
       <div className="p-4 md:p-8">
         {/* Header */}
         <motion.div

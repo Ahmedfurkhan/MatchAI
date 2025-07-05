@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Home, MessageCircle, Calendar, User, Bell, Search, Settings, Sparkles } from "lucide-react"
+import { Home, MessageCircle, Calendar, User, Bell, Search, Settings, Sparkles, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -102,6 +102,9 @@ export function ModernNavigation() {
               {notifications > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-red-500">{notifications}</Badge>
               )}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={signOut} className="text-gray-500 hover:text-red-600 hover:bg-red-50">
+              <LogOut className="h-5 w-5" />
             </Button>
           </div>
         </div>

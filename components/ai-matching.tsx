@@ -331,7 +331,7 @@ export function AIMatching() {
   const currentMatch = matches[currentMatchIndex]
 
   return (
-    <div className="max-w-md mx-auto p-4 pb-20 md:pb-4">
+    <div className="w-full max-w-2xl md:max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6">
       {/* Demo Mode Indicator */}
       {usingMockData && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -457,7 +457,7 @@ export function AIMatching() {
       </Card>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <Button
           variant="outline"
           size="lg"

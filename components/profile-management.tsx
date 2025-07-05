@@ -297,10 +297,10 @@ export function ProfileManagement() {
   }
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6 max-w-6xl w-full">
+    <div className="w-full max-w-2xl md:max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col items-center justify-center text-center mb-4 px-2">
+        <div className="flex flex-col items-center justify-center text-center mb-4 px-2 w-full">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Settings & Profile
           </h1>
@@ -339,7 +339,7 @@ export function ProfileManagement() {
                   <CardDescription>Your personal profile information</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center space-x-6">
+                  <div className="flex flex-col md:flex-row items-center md:space-x-6 space-y-4 md:space-y-0 w-full">
                     <div className="relative">
                       <Avatar className="h-24 w-24 ring-4 ring-purple-100">
                         <AvatarImage src={profile.avatar_url || "/placeholder.svg"} />
@@ -363,7 +363,7 @@ export function ProfileManagement() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div>
                       <Label htmlFor="full_name" className="text-sm font-medium">Full Name *</Label>
                       <Input
@@ -421,7 +421,7 @@ export function ProfileManagement() {
                       className="mt-1"
                     />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div>
                       <Label htmlFor="linkedin_url" className="text-sm font-medium">LinkedIn</Label>
                       <Input
@@ -459,7 +459,7 @@ export function ProfileManagement() {
                   <CardDescription>Your work and professional details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div>
                       <Label htmlFor="company" className="text-sm font-medium">Company</Label>
                       <Input
@@ -482,7 +482,7 @@ export function ProfileManagement() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div>
                       <Label htmlFor="industry" className="text-sm font-medium">Industry</Label>
                       <Select value={profile.industry || ""} onValueChange={(value) => updateProfile("industry", value)}>
@@ -672,7 +672,7 @@ export function ProfileManagement() {
                   <CardDescription>Set your availability and meeting preferences</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div>
                       <Label htmlFor="availability_status" className="text-sm font-medium">Availability Status</Label>
                       <Select
