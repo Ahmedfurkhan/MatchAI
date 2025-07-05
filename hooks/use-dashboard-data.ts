@@ -32,7 +32,7 @@ interface Insight {
   id: string
   title: string
   description: string
-  type: string
+  type: "warning" | "success" | "info"
 }
 
 // Mock data for when Supabase is not configured or tables don't exist

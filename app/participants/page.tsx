@@ -6,10 +6,10 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { Breadcrumb } from "@/components/breadcrumb"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import { ModernMeetingScheduler } from "@/components/modern-meeting-scheduler"
+import { ParticipantsManagement } from "@/components/participants-management"
 import { supabase } from "@/lib/supabase-client"
 
-export default function MeetingsPage() {
+export default function ParticipantsPage() {
   const router = useRouter()
 
   useEffect(() => {
@@ -35,11 +35,11 @@ export default function MeetingsPage() {
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
               <Breadcrumb />
-              <ModernMeetingScheduler />
+              <ParticipantsManagement />
             </div>
           </main>
         </SidebarInset>
       </div>
     </SidebarProvider>
   )
-}
+} 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Users, Target, Heart, Star, Calendar, TrendingUp } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
+import { Breadcrumb } from "@/components/breadcrumb"
 import { KPICard } from "@/components/kpi-card"
 import { ActivityChart } from "@/components/activity-chart"
 import { InsightsSection } from "@/components/insights-section"
@@ -15,8 +16,6 @@ import { useDashboardData } from "@/hooks/use-dashboard-data"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Info } from "lucide-react"
-import { ModernDashboard } from "@/components/modern-dashboard"
-import { ModernNavigation } from "@/components/modern-navigation"
 import { supabase } from "@/lib/supabase-client"
 
 function DashboardSkeleton() {
@@ -55,14 +54,15 @@ export default function DashboardPage() {
   }, [router])
 
   return (
-    <>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-gray-50 md:pl-56">
-          <DashboardSidebar />
-          <SidebarInset className="flex-1">
-            <DashboardHeader />
-
-            <main className="flex-1 p-2 sm:p-4 lg:p-6">
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-gray-50">
+        <DashboardSidebar />
+        <SidebarInset className="flex-1">
+          <DashboardHeader />
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+              <Breadcrumb />
+              
               {isSupabaseConfigured ? (
                 isSupabaseConfigured &&
                 !tablesExist &&
@@ -94,9 +94,9 @@ export default function DashboardPage() {
               {loading ? (
                 <DashboardSkeleton />
               ) : (
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-6">
                   {/* KPI Cards */}
-                  <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                  <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                     <KPICard
                       title="Total Participants"
                       value={kpiData?.totalParticipants || 150}
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Charts and Lists */}
-                  <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+                  <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                     <ActivityChart />
                     <div className="space-y-6">
                       <MatchingTopList participants={topParticipants} />
@@ -149,11 +149,10 @@ export default function DashboardPage() {
                   <InsightsSection insights={insights} />
                 </div>
               )}
-            </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-      <ModernDashboard />
-    </>
+            </div>
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   )
 }
