@@ -56,14 +56,13 @@ export default function DashboardPage() {
 
   return (
     <>
-      <ModernNavigation />
       <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-gray-50">
+        <div className="flex min-h-screen w-full bg-gray-50 md:pl-56">
           <DashboardSidebar />
           <SidebarInset className="flex-1">
             <DashboardHeader />
 
-            <main className="flex-1 p-4 lg:p-6">
+            <main className="flex-1 p-2 sm:p-4 lg:p-6">
               {isSupabaseConfigured ? (
                 isSupabaseConfigured &&
                 !tablesExist &&
@@ -95,9 +94,9 @@ export default function DashboardPage() {
               {loading ? (
                 <DashboardSkeleton />
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* KPI Cards */}
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                  <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                     <KPICard
                       title="Total Participants"
                       value={kpiData?.totalParticipants || 150}
@@ -138,7 +137,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Charts and Lists */}
-                  <div className="grid gap-6 lg:grid-cols-3">
+                  <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
                     <ActivityChart />
                     <div className="space-y-6">
                       <MatchingTopList participants={topParticipants} />

@@ -15,18 +15,18 @@ interface KPICardProps {
 export function KPICard({ title, value, subtitle, icon, trend, trendValue, className }: KPICardProps) {
   return (
     <Card className={cn("relative overflow-hidden", className)}>
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-gray-600">{title}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-600">{title}</p>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold text-gray-900">{value}</p>
-              {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">{value}</p>
+              {subtitle && <p className="text-xs sm:text-sm text-gray-500">{subtitle}</p>}
             </div>
             {trend && trendValue && (
               <div
                 className={cn(
-                  "flex items-center gap-1 text-xs",
+                  "flex items-center gap-1 text-xs sm:text-sm",
                   trend === "up" && "text-green-600",
                   trend === "down" && "text-red-600",
                   trend === "neutral" && "text-gray-600",
@@ -36,7 +36,7 @@ export function KPICard({ title, value, subtitle, icon, trend, trendValue, class
               </div>
             )}
           </div>
-          <div className="text-purple-600">{icon}</div>
+          <div className="text-purple-600 flex-shrink-0">{icon}</div>
         </div>
       </CardContent>
     </Card>
