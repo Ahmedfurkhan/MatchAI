@@ -15,12 +15,12 @@ const data = [
 
 export function ActivityChart() {
   return (
-    <Card className="col-span-1 lg:col-span-2">
+    <Card className="col-span-1 lg:col-span-2 h-full">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Activity by Time</CardTitle>
+        <CardTitle className="text-base sm:text-lg font-semibold">Activity by Time</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] sm:h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
