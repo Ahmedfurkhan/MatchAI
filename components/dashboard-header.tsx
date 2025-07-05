@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, User } from "lucide-react"
+import { Bell, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -8,7 +8,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useAuth } from "@/lib/auth"
 
 export function DashboardHeader() {
-  const { user, loading } = useAuth()
+  const { user, loading, signOut } = useAuth()
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 lg:px-6">
       <div className="flex items-center gap-4">
@@ -39,6 +39,9 @@ export function DashboardHeader() {
             <p className="text-sm font-medium text-gray-900">{loading ? "Loading..." : user?.user_metadata?.full_name || user?.full_name || user?.email?.split("@")[0] || "Unknown User"}</p>
             <p className="text-xs text-gray-500">{loading ? "" : user?.email || ""}</p>
           </div>
+          <Button variant="ghost" size="icon" onClick={signOut} className="text-gray-500 hover:text-red-600 hover:bg-red-50">
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </header>

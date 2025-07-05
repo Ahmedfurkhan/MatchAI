@@ -111,24 +111,24 @@ export function ModernNavigation() {
       <motion.aside
         initial={{ x: -100 }}
         animate={{ x: 0 }}
-        className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex-col z-40"
+        className="hidden md:flex fixed left-0 top-0 h-full w-56 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex-col z-40"
       >
-        <div className="p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-white" />
+        <div className="p-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 MatchAI
               </h1>
-              <p className="text-sm text-gray-500">AI-Powered Matching</p>
+              <p className="text-xs text-gray-500">AI-Powered Matching</p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 px-4">
-          <div className="space-y-2">
+        <nav className="flex-1 px-3">
+          <div className="space-y-1">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -137,7 +137,7 @@ export function ModernNavigation() {
                     whileHover={{ x: 4 }}
                     whileTap={{ scale: 0.98 }}
                     className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 relative",
+                      "flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 relative",
                       isActive
                         ? "bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 shadow-sm"
                         : "text-gray-600 hover:bg-gray-50",
@@ -145,7 +145,7 @@ export function ModernNavigation() {
                   >
                     <div
                       className={cn(
-                        "p-2 rounded-lg transition-all duration-300",
+                        "p-1.5 rounded-md transition-all duration-300",
                         isActive ? `bg-gradient-to-r ${item.color}` : "bg-gray-100",
                       )}
                     >
@@ -153,14 +153,14 @@ export function ModernNavigation() {
                         className={cn("h-4 w-4 transition-colors", isActive ? "text-white" : "text-gray-600")}
                       />
                     </div>
-                    <span className="font-medium">{item.name}</span>
+                    <span className="font-medium text-sm">{item.name}</span>
                     {item.name === "Chat" && notifications > 0 && (
-                      <Badge className="ml-auto h-5 w-5 p-0 text-xs bg-red-500">{notifications}</Badge>
+                      <Badge className="ml-auto h-4 w-4 p-0 text-xs bg-red-500">{notifications}</Badge>
                     )}
                     {isActive && (
                       <motion.div
                         layoutId="desktopActiveTab"
-                        className="absolute left-0 w-1 h-8 bg-gradient-to-b from-purple-500 to-pink-500 rounded-r-full"
+                        className="absolute left-0 w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-r-full"
                       />
                     )}
                   </motion.div>
@@ -170,14 +170,8 @@ export function ModernNavigation() {
           </div>
         </nav>
 
-        <div className="p-4">
-          <Link href="/profile" className="w-full">
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings className="h-4 w-4 mr-3" />
-              Settings
-            </Button>
-          </Link>
-          <Button variant="ghost" className="w-full justify-start mt-2" onClick={signOut}>
+        <div className="p-3">
+          <Button variant="ghost" className="w-full justify-start text-sm" onClick={signOut}>
             Logout
           </Button>
         </div>
