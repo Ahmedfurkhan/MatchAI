@@ -297,31 +297,31 @@ export function ProfileManagement() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto px-2 sm:px-4 md:px-6 py-4 md:py-6 max-w-6xl w-full">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col items-center justify-center text-center mb-4">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <div className="flex flex-col items-center justify-center text-center mb-4 px-2">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Settings & Profile
           </h1>
-          <p className="text-gray-600 mt-2">Manage your account settings and professional profile</p>
+          <p className="text-gray-600 mt-2 text-base md:text-lg">Manage your account settings and professional profile</p>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center w-full">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full max-w-4xl">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
-              <TabsTrigger value="profile" className="flex items-center gap-2">
+            <TabsList className="flex w-full overflow-x-auto no-scrollbar bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger value="profile" className="flex items-center gap-2 min-w-[120px] justify-center">
                 <User className="h-4 w-4" />
                 Profile
               </TabsTrigger>
-              <TabsTrigger value="professional" className="flex items-center gap-2">
+              <TabsTrigger value="professional" className="flex items-center gap-2 min-w-[120px] justify-center">
                 <Briefcase className="h-4 w-4" />
                 Professional
               </TabsTrigger>
-              <TabsTrigger value="preferences" className="flex items-center gap-2">
+              <TabsTrigger value="preferences" className="flex items-center gap-2 min-w-[120px] justify-center">
                 <Settings className="h-4 w-4" />
                 Preferences
               </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
+              <TabsTrigger value="security" className="flex items-center gap-2 min-w-[120px] justify-center">
                 <Shield className="h-4 w-4" />
                 Security
               </TabsTrigger>

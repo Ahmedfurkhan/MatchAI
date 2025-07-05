@@ -338,9 +338,9 @@ export function ModernChat() {
   }
 
   return (
-    <div className="flex h-full min-h-screen w-full bg-white overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-white overflow-hidden">
       {/* Chat Users Sidebar */}
-      <div className="w-80 min-w-[16rem] border-r border-gray-200 flex flex-col h-full">
+      <div className="w-full md:w-80 min-w-[16rem] border-b md:border-b-0 md:border-r border-gray-200 flex flex-col h-64 md:h-full">
         <div className="p-4 border-b border-gray-200">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -478,8 +478,8 @@ export function ModernChat() {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white">
-              <div className="flex items-center space-x-2">
+            <div className="p-2 md:p-4 border-t border-gray-200 bg-white">
+              <div className="flex items-center space-x-1 md:space-x-2">
                 <Button variant="ghost" size="sm">
                   <Paperclip className="h-4 w-4" />
                 </Button>
@@ -497,7 +497,7 @@ export function ModernChat() {
                 </div>
                 <Button
                   onClick={sendMessage}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 px-3 py-2 md:px-4 md:py-2"
                   disabled={!newMessage.trim()}
                 >
                   <Send className="h-4 w-4" />
