@@ -114,6 +114,12 @@ export function ModernChat() {
   const currentUserId = getUserId(user)
   const currentUserName = getUserName(user)
 
+  // State for mobile chat list overlay
+  const [showChatList, setShowChatList] = useState(false)
+
+  // Helper to determine if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
   useEffect(() => {
     if (!authLoading) {
       loadInitialData()
@@ -336,9 +342,6 @@ export function ModernChat() {
     }
   }
 
-  // Mobile sidebar toggle
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -353,19 +356,72 @@ export function ModernChat() {
 
   return (
     <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-white overflow-hidden">
-      {/* Sidebar overlay for mobile */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setSidebarOpen(false)} />
+      {/* Mobile Chat List Overlay */}
+      {showChatList && (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center p-4 border-b border-gray-200 bg-white">
+            <Button variant="ghost" size="icon" onClick={() => setShowChatList(false)}>
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+            </Button>
+            <span className="ml-2 font-bold text-lg">Chats</span>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {/* Current User at the top */}
+            <div className="flex items-center space-x-3 p-4 bg-purple-50 border-b border-purple-200">
+              <div className="relative">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={user?.user_metadata?.avatar_url || "/placeholder.svg"} />
+                  <AvatarFallback>{getInitials(getUserName(user))}</AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 truncate">{getUserName(user) || "You"}</p>
+                <p className="text-xs text-purple-600 font-semibold">You</p>
+              </div>
+            </div>
+            {chatUsers.map((chatUser) => {
+              const last = getLastMessage(chatUser.id)
+              return (
+                <motion.div
+                  key={chatUser.id}
+                  whileHover={{ backgroundColor: "#f8fafc" }}
+                  onClick={() => { setSelectedUser(chatUser); setShowChatList(false) }}
+                  className={`p-4 cursor-pointer border-b border-gray-100 ${selectedUser?.id === chatUser.id ? "bg-green-50 border-green-200" : ""}`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={chatUser.avatar_url || "/placeholder.svg"} />
+                        <AvatarFallback>{getInitials(chatUser.name)}</AvatarFallback>
+                      </Avatar>
+                      {chatUser.is_online && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center">
+                        <p className="font-semibold text-gray-900 truncate">{chatUser.name || "Unknown User"}</p>
+                        <span className="text-xs text-gray-400 ml-2">{last.time}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{last.text}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
       )}
-      {/* Chat Users Sidebar */}
-      <div className={`z-50 bg-white w-full md:w-80 min-w-[16rem] border-b md:border-b-0 md:border-r border-gray-200 flex flex-col h-64 md:h-full fixed md:static top-0 left-0 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      {/* Desktop Sidebar */}
+      <div className={`z-50 bg-white w-full md:w-80 min-w-[16rem] border-b md:border-b-0 md:border-r border-gray-200 flex flex-col h-64 md:h-full ${showChatList ? 'hidden md:flex' : 'hidden md:flex'}`}>
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input placeholder="Search conversations..." className="pl-10 bg-gray-50 border-0" />
           </div>
-          <Button variant="ghost" size="icon" className="ml-2 md:hidden" onClick={() => setSidebarOpen(false)}>
-            ×
+          <Button variant="ghost" size="icon" className="ml-2 md:hidden" onClick={() => setShowChatList(true)}>
+            ☰
           </Button>
         </div>
         {/* Current User at the top */}
@@ -389,7 +445,7 @@ export function ModernChat() {
               <motion.div
                 key={chatUser.id}
                 whileHover={{ backgroundColor: "#f8fafc" }}
-                onClick={() => { setSelectedUser(chatUser); setSidebarOpen(false) }}
+                onClick={() => { setSelectedUser(chatUser); setShowChatList(true) }}
                 className={`p-4 cursor-pointer border-b border-gray-100 ${selectedUser?.id === chatUser.id ? "bg-green-50 border-green-200" : ""}`}
               >
                 <div className="flex items-center space-x-3">
@@ -415,18 +471,17 @@ export function ModernChat() {
           })}
         </div>
       </div>
-
       {/* Chat Area */}
       <div className="flex-1 flex flex-col h-full relative">
-        {/* Mobile sidebar toggle button */}
-        <Button variant="ghost" size="icon" className="absolute top-2 left-2 z-30 md:hidden" onClick={() => setSidebarOpen(true)}>
-          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
-        </Button>
         {selectedUser ? (
           <>
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between sticky top-0 z-10">
               <div className="flex items-center space-x-3">
+                {/* Hamburger/back arrow for mobile */}
+                <Button variant="ghost" size="icon" className="md:hidden mr-2" onClick={() => setShowChatList(true)}>
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+                </Button>
                 <div className="relative">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={selectedUser.avatar_url || "/placeholder.svg"} />
@@ -460,7 +515,6 @@ export function ModernChat() {
                 </Button>
               </div>
             </div>
-
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-2 md:p-4 space-y-2 md:space-y-4 bg-gray-50">
               <AnimatePresence>
@@ -504,7 +558,6 @@ export function ModernChat() {
               </AnimatePresence>
               <div ref={messagesEndRef} />
             </div>
-
             {/* Message Input */}
             <div className="p-2 md:p-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
               <div className="flex items-center space-x-1 md:space-x-2">
