@@ -338,9 +338,9 @@ export function ModernChat() {
   }
 
   return (
-    <div className="h-[600px] flex bg-white rounded-xl shadow-lg overflow-hidden">
+    <div className="flex h-full min-h-screen w-full bg-white overflow-hidden">
       {/* Chat Users Sidebar */}
-      <div className="w-80 border-r border-gray-200 flex flex-col">
+      <div className="w-80 min-w-[16rem] border-r border-gray-200 flex flex-col h-full">
         <div className="p-4 border-b border-gray-200">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -394,7 +394,7 @@ export function ModernChat() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full">
         {selectedUser ? (
           <>
             {/* Chat Header */}
