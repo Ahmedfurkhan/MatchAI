@@ -5,7 +5,9 @@ export default function ChatPage() {
   return (
     <>
       <ModernNavigation />
-      <ModernChat />
+      <div className="flex min-h-screen w-full bg-gray-50">
+        <ModernChat />
+      </div>
     </>
   )
 }
