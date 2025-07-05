@@ -8,6 +8,7 @@ import { Home, MessageCircle, Calendar, User, Bell, Search, Settings, Sparkles }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/lib/auth"
 
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home, color: "from-blue-500 to-cyan-500" },
@@ -20,6 +21,7 @@ const navigationItems = [
 export function ModernNavigation() {
   const pathname = usePathname()
   const [notifications, setNotifications] = useState(3)
+  const { signOut } = useAuth()
 
   return (
     <>
@@ -169,9 +171,14 @@ export function ModernNavigation() {
         </nav>
 
         <div className="p-4">
-          <Button variant="ghost" className="w-full justify-start">
-            <Settings className="h-4 w-4 mr-3" />
-            Settings
+          <Link href="/profile" className="w-full">
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="h-4 w-4 mr-3" />
+              Settings
+            </Button>
+          </Link>
+          <Button variant="ghost" className="w-full justify-start mt-2" onClick={signOut}>
+            Logout
           </Button>
         </div>
       </motion.aside>
