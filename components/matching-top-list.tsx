@@ -50,21 +50,21 @@ export function MatchingTopList({ participants = [] }: MatchingTopListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Matching Top 5</CardTitle>
+        <CardTitle className="text-base sm:text-lg font-semibold">Matching Top 5</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         {participants.slice(0, 5).map((participant, index) => {
           const rank = index + 1
           const status = getStatusFromScore(participant.qualification_score)
 
           return (
-            <div key={participant.id} className="flex items-center gap-3">
+            <div key={participant.id} className="flex items-center gap-2 sm:gap-3">
               <div
-                className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${getRankColor(rank)}`}
+                className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full text-xs font-bold text-white ${getRankColor(rank)}`}
               >
                 {rank}
               </div>
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                 <AvatarImage src={participant.avatar_url || "/placeholder.svg"} />
                 <AvatarFallback>
                   {participant.name
@@ -73,11 +73,11 @@ export function MatchingTopList({ participants = [] }: MatchingTopListProps) {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{participant.name}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{participant.name}</p>
                 <p className="text-xs text-gray-500">Score: {participant.qualification_score}</p>
               </div>
-              <Badge className={getStatusColor(status)}>{status}</Badge>
+              <Badge className={`${getStatusColor(status)} text-xs`}>{status}</Badge>
             </div>
           )
         })}

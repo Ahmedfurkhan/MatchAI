@@ -41,18 +41,18 @@ const getBorderColor = (type: string) => {
 
 export function InsightsSection({ insights = [] }: InsightsSectionProps) {
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Real-Time Insights</h3>
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div className="space-y-3 sm:space-y-4">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900">Real-Time Insights</h3>
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
         {insights.slice(0, 4).map((insight) => (
           <Card key={insight.id} className={`border-l-4 ${getBorderColor(insight.type)}`}>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-start gap-3">
                 <div className="mt-1">{getInsightIcon(insight.type)}</div>
                 <div className="flex-1 space-y-2">
-                  <h4 className="font-medium text-gray-900">{insight.title}</h4>
-                  <p className="text-sm text-gray-600">{insight.description}</p>
-                  <Button variant="link" className="h-auto p-0 text-sm text-blue-600">
+                  <h4 className="text-sm sm:text-base font-medium text-gray-900">{insight.title}</h4>
+                  <p className="text-xs sm:text-sm text-gray-600">{insight.description}</p>
+                  <Button variant="link" className="h-auto p-0 text-xs sm:text-sm text-blue-600">
                     View detailed report →
                   </Button>
                 </div>
